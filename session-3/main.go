@@ -63,7 +63,7 @@ func main() {
 
 	var projectPhase string
 	switch {
-	case completedTask == 0:
+	case completedTask < 30:
 		projectPhase = "Starting phase"
 	case completedTask >= 30 && completedTask < 60:
 		projectPhase = "Midway"
