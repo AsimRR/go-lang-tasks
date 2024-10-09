@@ -1,19 +1,87 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"time"
+)
+
+const AvailableTasks = 100
+
+var (
+	errExceededTasks = errors.New("error: completedTasks exceeds total available tasks")
+	taskList         = []string{"TASK 1", "TASK 2", "TASK 3", "TASK 4", "TASK 5"}
 )
 
 func main() {
-	var projectName string = "Task Management System"
+	defer recoverFromPanic()
 
-	var startDate = time.Date(2024, 9, 18, 19, 0, 0, 0, time.UTC)
+	completedTasks := 105
 
-	fmt.Printf("Welcome to the %s\n", projectName)
+	validateCompletedTasks(completedTasks)
 
-	fmt.Println("Project start date is:", startDate)
+	isCompleted := checkCompletion(completedTasks)
+	remainingTasks, isNearCompletion := getRemainingTasks(completedTasks)
+	projectPhase := getProjectPhase(completedTasks)
 
-	fmt.Printf("Project: %s", projectName)
+	if isNearCompletion {
+		fmt.Println("More than 90 tasks completed")
+	}
 
+	fmt.Printf("Project is in the: %s\n", projectPhase)
+
+	showTaskList(taskList...)
+
+	performCountdown(remainingTasks)
+	fmt.Printf("Is the project completed? %v\n", isCompleted)
+}
+
+func validateCompletedTasks(completedTasks int) {
+	if completedTasks > AvailableTasks {
+		panic(errExceededTasks)
+	}
+}
+
+func recoverFromPanic() {
+	if recoveryMessage := recover(); recoveryMessage != nil {
+		fmt.Println(recoveryMessage)
+	}
+}
+
+func getRemainingTasks(completedTasks int) (int, bool) {
+	remainingTasks := AvailableTasks - completedTasks
+	isNearCompletion := completedTasks >= 90
+	return remainingTasks, isNearCompletion
+}
+
+func showTaskList(tasks ...string) {
+	for i, task := range tasks {
+		fmt.Printf("%d: %s\n", i+1, task)
+	}
+}
+
+func getProjectPhase(completedTasks int) string {
+	switch {
+	case completedTasks < 30:
+		return "Starting phase"
+	case completedTasks >= 30 && completedTasks < 60:
+		return "Midway"
+	case completedTasks >= 60:
+		return "Final phase"
+	default:
+		return "Unknown phase"
+	}
+}
+
+func checkCompletion(completedTasks int) bool {
+	fmt.Println("Status check completed")
+	return AvailableTasks == completedTasks
+}
+
+func performCountdown(tasksRemaining int) {
+	if tasksRemaining == 0 {
+		fmt.Println("All tasks completed!")
+		return
+	}
+	fmt.Printf("Tasks remaining: %d\n", tasksRemaining)
+	performCountdown(tasksRemaining - 1)
 }
