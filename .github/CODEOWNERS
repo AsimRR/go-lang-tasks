@@ -1,0 +1,6 @@
+# This is a CODEOWNERS file
+# Format: path pattern @github-username
+
+# Default owners for all files
+*  @AsimRR  @zaur-adigozalov
+
